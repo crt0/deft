@@ -61,8 +61,8 @@
 ;; all text files in the Deft directory followed by short summaries
 ;; and last modified times.  The title is taken to be the first line
 ;; of the file and the summary is extracted from the text that
-;; follows.  Files are sorted in terms of the last modified date, from
-;; newest to oldest.
+;; follows.  By default, files are sorted in terms of the last
+;; modified date, from newest to oldest.
 
 ;; All Deft files or notes are simple plain text files where the first
 ;; line contains a title.  As an example, the following directory
@@ -377,6 +377,11 @@ This may be a relative path from `deft-directory', or an absolute path."
   :safe 'stringp
   :group 'deft)
 
+(defcustom deft-default-sort-function 'deft-file-newer-p
+  "Function for sorting files as they are displayed."
+  :type 'function
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -671,12 +676,12 @@ title."
   "Update file list and update cached information for each file."
   (setq deft-all-files (deft-find-all-files))             ; List all files
   (mapc 'deft-cache-file deft-all-files)                  ; Cache contents
-  (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
+  (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort
 
 (defun deft-cache-update-file (file)
   "Update cached information for a single file."
   (deft-cache-file file)                                  ; Cache contents
-  (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
+  (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort
 
 ;; Cache access
 
@@ -979,7 +984,7 @@ If the point is not on a file widget, do nothing."
 
 (defun deft-sort-files (files)
   "Sort FILES in reverse order by modified time."
-  (sort files (lambda (f1 f2) (deft-file-newer-p f1 f2))))
+  (sort files deft-default-sort-function))
 
 (defun deft-filter-initialize ()
   "Initialize the filter string (nil) and files list (all files)."
