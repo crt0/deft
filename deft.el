@@ -377,6 +377,11 @@ This may be a relative path from `deft-directory', or an absolute path."
   :safe 'stringp
   :group 'deft)
 
+(defcustom deft-default-file-name nil
+  "Function returning a default file name for Deft notes files."
+  :type 'function
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -885,7 +890,9 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
 SLUG is the short filename, without a path or a file extension.
 If the filter string is non-nil and title is not from file name,
 use it as the title."
-  (interactive "sNew filename (without extension): ")
+  (interactive (list (read-string "New filename (without extension): "
+                                  (if (functionp deft-default-file-name)
+                                      (funcall deft-default-file-name)))))
   (let ((file (deft-absolute-filename slug)))
     (if (file-exists-p file)
         (message "Aborting, file already exists: %s" file)
